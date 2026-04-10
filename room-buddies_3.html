@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>RoomBuddies — Find your perfect roommate</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;1,9..40,400&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --coral:#D85A30;--coral-light:#FAECE7;--coral-mid:#F0997B;--coral-dark:#993C1D;
+  --navy:#0C1F35;--navy-mid:#185FA5;--navy-light:#1a2f47;
+  --teal:#1D9E75;--teal-light:#E1F5EE;--teal-dark:#0F6E56;
+  --amber:#BA7517;--amber-light:#FAEEDA;
+  --red:#E24B4A;--red-light:#FCEBEB;
+  --text:#1a1a1a;--muted:#777;--border:#e4e1db;--bg:#f7f5f2;--surface:#ffffff;
+  --shadow:0 2px 16px rgba(0,0,0,.07);
+}
+html,body{min-height:100%;font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);font-size:16px}
+
+/* SCREENS */
+.screen{display:none;min-height:100vh}
+.screen.active{display:block}
+
+/* ===================== LANDING ===================== */
+#s-landing{
+  background:var(--navy);
+  min-height:100vh;
+  display:none;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:2rem 1.5rem;
+  position:relative;
+  overflow:hidden;
+}
+#s-landing.active{display:flex}
+#s-landing::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 80% 60% at 50% 0%, #1a3a5c 0%, transparent 70%),
+             radial-gradient(circle 400px at 80% 80%, rgba(216,90,48,.12) 0%, transparent 60%);
+  pointer-events:none;
+}
+.land-pill{background:rgba(216,90,48,.15);color:var(--coral-mid);border:1px solid rgba(216,90,48,.3);font-size:.78rem;font-weight:500;letter-spacing:.06em;padding:.35rem 1rem;border-radius:50px;margin-bottom:1.5rem;display:inline-block}
+.land-logo{font-family:'Syne',sans-serif;font-size:3.2rem;font-weight:800;color:#fff;letter-spacing:-2px;line-height:1;margin-bottom:1rem}
+.land-logo span{color:var(--coral-mid)}
+.land-tagline{color:#8aa5bf;font-size:1.05rem;max-width:360px;line-height:1.7;margin-bottom:2.5rem}
+.land-btns{display:flex;flex-direction:column;gap:.75rem;align-items:center;width:100%;max-width:280px}
+.btn-cta{background:var(--coral);color:#fff;border:none;padding:1rem 2.5rem;border-radius:50px;font-family:'DM Sans',sans-serif;font-size:1rem;font-weight:500;cursor:pointer;width:100%;transition:all .2s}
+.btn-cta:hover{background:var(--coral-dark);transform:translateY(-2px)}
+.btn-ghost{background:transparent;color:#c5d8ea;border:1.5px solid rgba(255,255,255,.18);padding:.85rem 2rem;border-radius:50px;font-family:'DM Sans',sans-serif;font-size:.93rem;cursor:pointer;width:100%;transition:border-color .2s}
+.btn-ghost:hover{border-color:rgba(255,255,255,.5)}
+.land-stats{display:flex;gap:2.5rem;margin-top:3rem;padding-top:2rem;border-top:1px solid rgba(255,255,255,.08)}
+.stat-item{text-align:center}
+.stat-num{font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:700;color:#fff}
+.stat-lbl{font-size:.75rem;color:#5a7a96;margin-top:.2rem}
+
+/* ===================== SIGNUP ===================== */
+#s-signup{display:none;align-items:flex-start;justify-content:center;padding:3rem 1.5rem}
+#s-signup.active{display:flex}
+.signup-box{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:2.25rem;width:100%;max-width:460px;box-shadow:var(--shadow)}
+.signup-logo{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;color:var(--navy);letter-spacing:-0.5px;margin-bottom:1.75rem}
+.signup-logo span{color:var(--coral)}
+.signup-title{font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:700;margin-bottom:.3rem}
+.signup-sub{color:var(--muted);font-size:.88rem;margin-bottom:1.75rem}
+.field{margin-bottom:1rem}
+.field label{display:block;font-size:.8rem;font-weight:500;color:#555;margin-bottom:.35rem;text-transform:uppercase;letter-spacing:.04em}
+.field input,.field select{width:100%;padding:.75rem 1rem;border:1.5px solid var(--border);border-radius:11px;font-family:'DM Sans',sans-serif;font-size:.95rem;color:var(--text);background:var(--surface);outline:none;transition:border .15s}
+.field input:focus,.field select:focus{border-color:var(--coral)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+.field select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23999' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 1rem center}
+.btn-full{width:100%;background:var(--coral);color:#fff;border:none;padding:1rem;border-radius:50px;font-family:'DM Sans',sans-serif;font-size:1rem;font-weight:500;cursor:pointer;margin-top:.5rem;transition:opacity .15s}
+.btn-full:hover{opacity:.9}
+.foot-note{text-align:center;font-size:.82rem;color:var(--muted);margin-top:1rem}
+.foot-note a{color:var(--coral);cursor:pointer;text-decoration:none}
+
+/* ===================== QUIZ ===================== */
+#s-quiz{display:none;min-height:100vh}
+#s-quiz.active{display:flex;flex-direction:column}
+.quiz-top{background:var(--surface);border-bottom:1px solid var(--border);padding:1rem 1.5rem;display:flex;align-items:center;gap:1rem;position:sticky;top:0;z-index:10}
+.quiz-logo-sm{font-family:'Syne',sans-serif;font-weight:800;color:var(--navy);font-size:1rem}
+.quiz-logo-sm span{color:var(--coral)}
+.quiz-prog-wrap{flex:1}
+.prog-bg{background:var(--border);border-radius:50px;height:6px;overflow:hidden}
+.prog-fill{background:var(--coral);height:100%;border-radius:50px;transition:width .4s ease}
+.prog-txt{font-size:.75rem;color:var(--muted);text-align:right;margin-top:.3rem}
+.quiz-body{flex:1;display:flex;flex-direction:column;align-items:center;padding:2.5rem 1.5rem}
+.quiz-card{width:100%;max-width:540px}
+.q-section-tag{display:inline-block;background:var(--coral-light);color:var(--coral-dark);font-size:.73rem;font-weight:500;letter-spacing:.07em;padding:.3rem .85rem;border-radius:50px;margin-bottom:.85rem}
+.q-heading{font-family:'Syne',sans-serif;font-size:1.35rem;font-weight:700;line-height:1.45;margin-bottom:1.75rem;color:var(--navy)}
+.opts{display:flex;flex-direction:column;gap:.6rem;margin-bottom:2rem}
+.opt{background:var(--surface);border:1.5px solid var(--border);border-radius:13px;padding:1rem 1.2rem;cursor:pointer;font-size:.95rem;text-align:left;color:var(--text);font-family:'DM Sans',sans-serif;transition:all .15s;display:flex;align-items:center;gap:.85rem}
+.opt-dot{width:20px;height:20px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;transition:all .15s;display:flex;align-items:center;justify-content:center}
+.opt:hover{border-color:var(--coral);background:var(--coral-light)}
+.opt:hover .opt-dot{border-color:var(--coral)}
+.opt.selected{border-color:var(--coral);background:var(--coral-light)}
+.opt.selected .opt-dot{background:var(--coral);border-color:var(--coral)}
+.opt.selected .opt-dot::after{content:'';width:7px;height:7px;border-radius:50%;background:#fff;display:block}
+.scale-wrap{margin-bottom:2rem}
+.scale-btns{display:flex;gap:.5rem}
+.scale-btn{flex:1;aspect-ratio:1;border:1.5px solid var(--border);border-radius:12px;cursor:pointer;font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;background:var(--surface);color:var(--muted);transition:all .15s}
+.scale-btn:hover{border-color:var(--coral);color:var(--coral);background:var(--coral-light)}
+.scale-btn.selected{border-color:var(--coral);background:var(--coral);color:#fff}
+.scale-labels{display:flex;justify-content:space-between;margin-top:.6rem;font-size:.75rem;color:var(--muted)}
+.quiz-nav{display:flex;align-items:center;gap:.75rem;margin-top:auto;padding-top:1rem;width:100%;max-width:540px}
+.btn-back-q{background:transparent;border:1.5px solid var(--border);color:var(--muted);padding:.8rem 1.6rem;border-radius:50px;font-family:'DM Sans',sans-serif;font-size:.92rem;cursor:pointer;transition:border-color .15s}
+.btn-back-q:hover{border-color:#aaa}
+.btn-next-q{margin-left:auto;background:var(--coral);color:#fff;border:none;padding:.8rem 2rem;border-radius:50px;font-family:'DM Sans',sans-serif;font-size:.92rem;font-weight:500;cursor:pointer;transition:opacity .15s}
+.btn-next-q:disabled{opacity:.35;cursor:not-allowed}
+
+/* ===================== MATCHES ===================== */
+#s-matches{display:none;min-height:100vh}
+#s-matches.active{display:block}
+.matches-nav{background:var(--surface);border-bottom:1px solid var(--border);padding:1rem 1.5rem;display:flex;align-items:center;justify-content:space-between}
+.matches-logo{font-family:'Syne',sans-serif;font-weight:800;color:var(--navy);font-size:1.1rem}
+.matches-logo span{color:var(--coral)}
+.nav-user{display:flex;align-items:center;gap:.6rem;font-size:.88rem;color:var(--muted)}
+.nav-avatar{width:34px;height:34px;border-radius:50%;background:var(--coral-light);color:var(--coral-dark);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.82rem}
+.matches-content{max-width:600px;margin:0 auto;padding:2rem 1.5rem}
+.matches-header{margin-bottom:1.75rem}
+.matches-title{font-family:'Syne',sans-serif;font-size:1.75rem;font-weight:800;color:var(--navy)}
+.matches-sub{color:var(--muted);font-size:.9rem;margin-top:.35rem}
+.filter-row{display:flex;gap:.5rem;margin-bottom:1.5rem;flex-wrap:wrap}
+.filter-chip{background:var(--surface);border:1.5px solid var(--border);border-radius:50px;padding:.4rem 1rem;font-size:.8rem;cursor:pointer;color:var(--muted);transition:all .15s}
+.filter-chip:hover,.filter-chip.active{border-color:var(--coral);color:var(--coral);background:var(--coral-light)}
+.match-card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:1.4rem;margin-bottom:.85rem;cursor:pointer;transition:all .2s;box-shadow:0 1px 4px rgba(0,0,0,.04)}
+.match-card:hover{border-color:var(--coral);box-shadow:0 4px 20px rgba(216,90,48,.12);transform:translateY(-2px)}
+.mc-top{display:flex;align-items:center;gap:1rem;margin-bottom:1rem}
+.mc-avatar{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;font-size:1.15rem;flex-shrink:0}
+.mc-info{flex:1}
+.mc-name{font-weight:500;font-size:1.05rem;color:var(--navy)}
+.mc-meta{font-size:.82rem;color:var(--muted);margin-top:.2rem}
+.mc-score{text-align:right}
+.mc-score-num{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;line-height:1}
+.mc-score-lbl{font-size:.7rem;color:var(--muted);margin-top:.1rem}
+.mc-bar-bg{background:var(--border);border-radius:50px;height:5px;overflow:hidden;margin-bottom:.85rem}
+.mc-bar-fill{height:100%;border-radius:50px;transition:width .6s}
+.mc-tags{display:flex;gap:.4rem;flex-wrap:wrap}
+.tag{font-size:.73rem;padding:.28rem .7rem;border-radius:50px;font-weight:500}
+.tag-good{background:var(--teal-light);color:var(--teal-dark)}
+.tag-bad{background:var(--red-light);color:#A32D2D}
+.tag-neutral{background:#f1ede8;color:#666}
+
+/* ===================== DETAIL ===================== */
+#s-detail{display:none;min-height:100vh}
+#s-detail.active{display:block}
+.detail-nav{background:var(--surface);border-bottom:1px solid var(--border);padding:1rem 1.5rem;display:flex;align-items:center;gap:.75rem}
+.back-btn{background:transparent;border:1.5px solid var(--border);color:var(--muted);padding:.55rem 1.1rem;border-radius:50px;font-size:.85rem;cursor:pointer;font-family:'DM Sans',sans-serif}
+.back-btn:hover{border-color:#aaa}
+.detail-logo{font-family:'Syne',sans-serif;font-weight:800;color:var(--navy);font-size:1rem}
+.detail-logo span{color:var(--coral)}
+.detail-content{max-width:580px;margin:0 auto;padding:2rem 1.5rem}
+.detail-hero{background:var(--navy);border-radius:20px;padding:2rem;margin-bottom:1rem;text-align:center;position:relative;overflow:hidden}
+.detail-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 70% 30%, rgba(216,90,48,.15) 0%, transparent 60%);pointer-events:none}
+.d-avatar{width:80px;height:80px;border-radius:50%;margin:0 auto 1rem;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;font-size:1.6rem}
+.d-name{font-family:'Syne',sans-serif;font-size:1.35rem;font-weight:700;color:#fff}
+.d-meta{color:#8aa5bf;font-size:.87rem;margin-top:.3rem}
+.d-score-big{font-family:'Syne',sans-serif;font-size:3.5rem;font-weight:800;line-height:1;margin:.9rem 0 .2rem}
+.d-score-lbl{font-size:.75rem;color:#6a8ba5;letter-spacing:.08em;text-transform:uppercase}
+.d-score-bar-bg{background:rgba(255,255,255,.1);border-radius:50px;height:7px;overflow:hidden;margin:.9rem 2rem 0}
+.d-score-bar-fill{height:100%;border-radius:50px}
+.section-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1.3rem 1.4rem;margin-bottom:.85rem}
+.sc-head{font-size:.72rem;font-weight:500;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem}
+.sc-head::after{content:'';flex:1;height:1px;background:var(--border)}
+.cat-row{display:flex;align-items:center;gap:.85rem;margin-bottom:.7rem}
+.cat-lbl{font-size:.9rem;color:var(--text);flex:1}
+.cat-bar-bg{width:100px;background:var(--border);border-radius:50px;height:7px;overflow:hidden}
+.cat-bar-fill{height:100%;border-radius:50px;transition:width .6s}
+.cat-pct{font-size:.85rem;font-weight:500;min-width:36px;text-align:right}
+.mismatch-row{display:flex;gap:.75rem;margin-bottom:.75rem;align-items:flex-start}
+.mm-icon{width:28px;height:28px;border-radius:8px;background:var(--red-light);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.8rem}
+.mm-text{font-size:.9rem;line-height:1.55;color:var(--text)}
+.lifestyle-grid{display:flex;gap:.45rem;flex-wrap:wrap}
+.ltag{background:#f1ede8;color:#555;font-size:.8rem;padding:.35rem .85rem;border-radius:50px}
+.connect-section{margin-top:.5rem}
+.btn-connect{width:100%;background:var(--coral);color:#fff;border:none;padding:1.1rem;border-radius:50px;font-family:'DM Sans',sans-serif;font-size:1rem;font-weight:500;cursor:pointer;transition:all .2s}
+.btn-connect:hover{background:var(--coral-dark);transform:translateY(-1px)}
+.btn-message{width:100%;background:transparent;border:1.5px solid var(--border);color:var(--text);padding:1rem;border-radius:50px;font-family:'DM Sans',sans-serif;font-size:1rem;cursor:pointer;margin-top:.6rem;transition:border-color .15s}
+.btn-message:hover{border-color:var(--navy)}
+
+/* SUCCESS TOAST */
+.toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(80px);background:var(--navy);color:#fff;padding:.85rem 1.75rem;border-radius:50px;font-size:.9rem;font-weight:500;opacity:0;transition:all .35s;z-index:999;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+
+<!-- ======= LANDING ======= -->
+<div id="s-landing" class="screen active">
+  <div class="land-pill">🏠 India's smartest roommate finder</div>
+  <div class="land-logo">Room<span>Buddies</span></div>
+  <p class="land-tagline">Stop gambling on roommates. Our compatibility quiz matches you with people who actually fit your lifestyle.</p>
+  <div class="land-btns">
+    <button class="btn-cta" onclick="show('s-signup')">Find my room buddy</button>
+    <button class="btn-ghost" onclick="show('s-matches')">Skip to demo matches →</button>
+  </div>
+  <div class="land-stats">
+    <div class="stat-item"><div class="stat-num">12K+</div><div class="stat-lbl">Active listings</div></div>
+    <div class="stat-item"><div class="stat-num">94%</div><div class="stat-lbl">Match satisfaction</div></div>
+    <div class="stat-item"><div class="stat-num">22</div><div class="stat-lbl">Compatibility checks</div></div>
+  </div>
+</div>
+
+<!-- ======= SIGNUP ======= -->
+<div id="s-signup" class="screen">
+  <div class="signup-box">
+    <div class="signup-logo">Room<span>Buddies</span></div>
+    <div class="signup-title">Create your profile</div>
+    <div class="signup-sub">Takes 3 minutes. Saves months of regret.</div>
+    <div class="row2">
+      <div class="field"><label>First name</label><input id="fname" placeholder="Alex"/></div>
+      <div class="field"><label>Last name</label><input placeholder="Kumar"/></div>
+    </div>
+    <div class="field"><label>Email</label><input type="email" placeholder="alex@email.com"/></div>
+    <div class="field"><label>Password</label><input type="password" placeholder="••••••••"/></div>
+    <div class="row2">
+      <div class="field"><label>Age</label><input type="number" placeholder="24" min="18" max="60"/></div>
+      <div class="field"><label>Gender</label>
+        <select><option>Prefer not to say</option><option>Male</option><option>Female</option><option>Non-binary</option></select>
+      </div>
+    </div>
+    <div class="field"><label>City</label><input placeholder="Mumbai, Delhi, Bengaluru…"/></div>
+    <div class="field"><label>I am a</label>
+      <select><option>College student</option><option>Working professional</option><option>Freelancer / self-employed</option><option>Other</option></select>
+    </div>
+    <button class="btn-full" onclick="startQuiz()">Continue to lifestyle quiz →</button>
+    <div class="foot-note">Already have an account? <a onclick="show('s-matches')">Sign in</a></div>
+  </div>
+</div>
+
+<!-- ======= QUIZ ======= -->
+<div id="s-quiz" class="screen">
+  <div class="quiz-top">
+    <div class="quiz-logo-sm">Room<span>Buddies</span></div>
+    <div class="quiz-prog-wrap">
+      <div class="prog-bg"><div class="prog-fill" id="prog-fill"></div></div>
+      <div class="prog-txt" id="prog-txt"></div>
+    </div>
+  </div>
+  <div class="quiz-body">
+    <div class="quiz-card">
+      <div class="q-section-tag" id="q-section"></div>
+      <div class="q-heading" id="q-heading"></div>
+      <div id="q-body"></div>
+    </div>
+    <div class="quiz-nav" style="width:100%;max-width:540px">
+      <button class="btn-back-q" id="btn-back" onclick="prevQ()">← Back</button>
+      <button class="btn-next-q" id="btn-next" onclick="nextQ()">Next →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ======= MATCHES ======= -->
+<div id="s-matches" class="screen">
+  <div class="matches-nav">
+    <div class="matches-logo">Room<span>Buddies</span></div>
+    <div class="nav-user">
+      <div class="nav-avatar" id="nav-av">U</div>
+      <span id="nav-name">You</span>
+    </div>
+  </div>
+  <div class="matches-content">
+    <div class="matches-header">
+      <div class="matches-title">Your top matches</div>
+      <div class="matches-sub">Ranked by lifestyle compatibility score</div>
+    </div>
+    <div class="filter-row">
+      <div class="filter-chip active">All</div>
+      <div class="filter-chip">90%+ Match</div>
+      <div class="filter-chip">Same city</div>
+      <div class="filter-chip">Students</div>
+      <div class="filter-chip">Professionals</div>
+    </div>
+    <div id="match-list"></div>
+  </div>
+</div>
+
+<!-- ======= DETAIL ======= -->
+<div id="s-detail" class="screen">
+  <div class="detail-nav">
+    <button class="back-btn" onclick="show('s-matches')">← Back</button>
+    <div class="detail-logo">Room<span>Buddies</span></div>
+  </div>
+  <div class="detail-content">
+    <div id="detail-inner"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const questions = [
+  {s:"Sleep & Schedule", q:"What time do you usually wake up on weekdays?", type:"opts", o:["Before 6 AM — early bird!","6 – 7:30 AM","7:30 – 9 AM","After 9 AM — night owl life"], k:"wake"},
+  {s:"Sleep & Schedule", q:"What time do you go to bed on weeknights?", type:"opts", o:["Before 10 PM","10 PM – 12 AM","12 – 2 AM","After 2 AM"], k:"sleep"},
+  {s:"Sleep & Schedule", q:"How sensitive are you to noise while sleeping?", type:"scale", lo:"Heavy sleeper — noise doesn't bother me", hi:"Very light — any sound wakes me", k:"sleep_sens"},
+  {s:"Cleanliness", q:"How often do you clean shared spaces (kitchen, living room)?", type:"opts", o:["Every day","Every 2–3 days","Once a week","When it looks messy"], k:"clean_freq"},
+  {s:"Cleanliness", q:"Rate your personal cleanliness standard:", type:"scale", lo:"Relaxed — 'lived in' is comfortable", hi:"Spotless at all times — OCD level", k:"clean_std"},
+  {s:"Cleanliness", q:"How do you handle dirty dishes?", type:"opts", o:["Wash immediately after every meal","Within a few hours","By end of day","When the sink fills up"], k:"dishes"},
+  {s:"Cleanliness", q:"How do you feel about a cleaning chore rota?", type:"opts", o:["Love it — structure is great","Fine, as long as it's fair","Prefer informal understanding","Don't like rigid schedules"], k:"chore_rota"},
+  {s:"Social & Guests", q:"How often do you have friends or guests over?", type:"opts", o:["Rarely or never","Once or twice a month","Every week","Multiple times a week"], k:"guests"},
+  {s:"Social & Guests", q:"What's your take on house parties or gatherings?", type:"opts", o:["Absolutely no parties at home","An occasional small gathering is fine","Love a good party now and then","The more, the merrier!"], k:"parties"},
+  {s:"Social & Guests", q:"How much notice do you expect before guests come over?", type:"opts", o:["Always discuss in advance (24h+)","A few hours notice is fine","Same day is totally okay","No notice needed"], k:"guest_notice"},
+  {s:"Social & Guests", q:"How comfortable are you with noise during the day?", type:"scale", lo:"I need it quiet to focus", hi:"Loud background noise is fine by me", k:"noise_day"},
+  {s:"Work & Study", q:"Do you work or study from home?", type:"opts", o:["Full time from home","Mostly from home (3–4 days)","Sometimes (1–2 days)","Rarely or never"], k:"wfh"},
+  {s:"Work & Study", q:"When are you typically noisiest at home?", type:"opts", o:["Morning (6–10 AM)","Afternoon (12–5 PM)","Evening (5–10 PM)","Late night (10 PM+)"], k:"noisy_hrs"},
+  {s:"Kitchen & Cooking", q:"How often do you cook at home?", type:"opts", o:["Every day — full meals","A few times a week","Occasionally","Rarely or never"], k:"cook"},
+  {s:"Kitchen & Cooking", q:"Are you open to sharing groceries or cooking together?", type:"opts", o:["Yes! I love shared cooking","Sometimes, depends on what","Prefer to keep groceries separate","Strongly prefer separate kitchens"], k:"grocery"},
+  {s:"Kitchen & Cooking", q:"How important is kitchen cleanliness to you?", type:"scale", lo:"Not a big deal", hi:"Non-negotiable — must be spotless", k:"kitchen"},
+  {s:"Lifestyle & Habits", q:"Do you smoke?", type:"opts", o:["No — non-smoker","Outdoors only","Occasionally indoors","Yes, regularly"], k:"smoke"},
+  {s:"Lifestyle & Habits", q:"Do you have pets or plan to get one?", type:"opts", o:["No pets, none planned","I have a pet","Thinking about getting one","I love pets, either way is fine"], k:"pets"},
+  {s:"Lifestyle & Habits", q:"How would you describe yourself at home?", type:"scale", lo:"Very introverted — I need my alone time", hi:"Very social — let's hang out always!", k:"social_energy"},
+  {s:"Lifestyle & Habits", q:"Do you drink alcohol at home?", type:"opts", o:["Never","Occasionally (weekends)","Regularly","Prefer not to share"], k:"alcohol"},
+  {s:"Finances & Space", q:"How do you prefer to split household expenses?", type:"opts", o:["50/50 — equal split always","Proportional to what each person uses","Whoever uses it pays","Flexible — discuss as they come up"], k:"expenses"},
+  {s:"Finances & Space", q:"How do you feel about sharing/borrowing belongings?", type:"opts", o:["Fine with sharing most things","Ask first, then totally fine","I prefer to keep things separate","Strongly prefer no sharing at all"], k:"sharing"},
+  {s:"Communication", q:"How do you handle roommate conflicts?", type:"opts", o:["Talk it out directly and immediately","Give it a day, then address it","Drop hints and hope it resolves","I tend to avoid conflict"], k:"conflict"},
+];
+
+let cur = 0;
+const ans = {};
+let userName = "You";
+
+function startQuiz(){
+  const n = document.getElementById('fname').value.trim();
+  if(n){
+    userName = n;
+    const av = document.getElementById('nav-av');
+    if(av) av.textContent = n[0].toUpperCase();
+    const nm = document.getElementById('nav-name');
+    if(nm) nm.textContent = n;
+  }
+  cur = 0;
+  show('s-quiz');
+  renderQ();
+}
+
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+  if(id==='s-matches') renderMatches();
+}
+
+function renderQ(){
+  const q = questions[cur];
+  const pct = Math.round(((cur)/questions.length)*100);
+  document.getElementById('prog-fill').style.width = Math.max(4,pct)+'%';
+  document.getElementById('prog-txt').textContent = (cur+1)+' of '+questions.length;
+  document.getElementById('q-section').textContent = q.s;
+  document.getElementById('q-heading').textContent = q.q;
+  document.getElementById('btn-back').style.visibility = cur===0?'hidden':'visible';
+  const body = document.getElementById('q-body');
+  if(q.type==='opts'){
+    body.innerHTML = '<div class="opts">'+q.o.map((o,i)=>`
+      <button class="opt${ans[q.k]===i?' selected':''}" onclick="pick(${i})">
+        <span class="opt-dot"></span><span>${o}</span>
+      </button>`).join('')+'</div>';
+  } else {
+    const v = ans[q.k]??null;
+    body.innerHTML = `<div class="scale-wrap">
+      <div class="scale-btns">
+        ${[1,2,3,4,5].map(n=>`<button class="scale-btn${v===n?' selected':''}" onclick="pickScale(${n})">${n}</button>`).join('')}
+      </div>
+      <div class="scale-labels"><span>${q.lo}</span><span>${q.hi}</span></div>
+    </div>`;
+  }
+  checkNext();
+}
+
+function pick(i){
+  ans[questions[cur].k]=i;
+  document.querySelectorAll('.opt').forEach((o,idx)=>o.classList.toggle('selected',idx===i));
+  checkNext();
+  setTimeout(()=>nextQ(),380);
+}
+
+function pickScale(n){
+  ans[questions[cur].k]=n;
+  document.querySelectorAll('.scale-btn').forEach((b,idx)=>b.classList.toggle('selected',idx+1===n));
+  checkNext();
+  setTimeout(()=>nextQ(),380);
+}
+
+function checkNext(){
+  document.getElementById('btn-next').disabled = ans[questions[cur].k]===undefined;
+}
+
+function nextQ(){
+  if(ans[questions[cur].k]===undefined) return;
+  if(cur < questions.length-1){cur++;renderQ();}
+  else{show('s-matches');}
+}
+
+function prevQ(){
+  if(cur>0){cur--;renderQ();}
+}
+
+// ---- PROFILES ----
+const profiles = [
+  {
+    name:"Priya Sharma", age:24, occ:"UX Designer", city:"Bengaluru",
+    in:"PS", bg:"#E1F5EE", fg:"#085041",
+    score:91,
+    cats:{
+      "Sleep & Schedule":94,"Cleanliness":96,"Social & Guests":82,
+      "Kitchen":97,"Lifestyle":85,"Finances":91
+    },
+    mismatches:[
+      {t:"Guest frequency", d:"Priya prefers guests on weekends only — you may need to align on weekday visitors."},
+      {t:"Sleep sensitivity", d:"She's a light sleeper; late-night noise after 11 PM could be an issue."}
+    ],
+    tags:["Early riser","Very tidy","Non-smoker","Vegetarian cook","WFH sometimes","No pets"]
+  },
+  {
+    name:"Rohan Verma", age:27, occ:"Software Engineer", city:"Bengaluru",
+    in:"RV", bg:"#E6F1FB", fg:"#0C447C",
+    score:83,
+    cats:{
+      "Sleep & Schedule":68,"Cleanliness":84,"Social & Guests":91,
+      "Kitchen":76,"Lifestyle":88,"Finances":88
+    },
+    mismatches:[
+      {t:"Sleep schedule", d:"Rohan is a night owl — typically sleeps past 1 AM, up by 9 AM."},
+      {t:"Party tolerance", d:"He enjoys occasional house gatherings; needs an agreed frequency."},
+      {t:"Cooking habits", d:"Rarely cooks — often orders in, which can affect kitchen usage patterns."}
+    ],
+    tags:["Night owl","Social","Pet-friendly","Orders in mostly","WFH full-time","Non-smoker"]
+  },
+  {
+    name:"Anika Singh", age:22, occ:"MBA Student", city:"Delhi",
+    in:"AS", bg:"#FAECE7", fg:"#712B13",
+    score:77,
+    cats:{
+      "Sleep & Schedule":82,"Cleanliness":73,"Social & Guests":80,
+      "Kitchen":68,"Lifestyle":80,"Finances":74
+    },
+    mismatches:[
+      {t:"Cleanliness standard", d:"Anika's threshold is 'tidy enough' — may not match high-standard co-habits."},
+      {t:"Dishes policy", d:"Tends to wash dishes by end of day rather than immediately."},
+      {t:"Expense splitting", d:"Prefers proportional splitting — needs clear upfront discussion."}
+    ],
+    tags:["Morning person","Student","Cooks 2–3x/week","Non-smoker","Gym routine","No pets"]
+  },
+  {
+    name:"Kavya Nair", age:25, occ:"Content Creator", city:"Mumbai",
+    in:"KN", bg:"#FBEAF0", fg:"#72243E",
+    score:69,
+    cats:{
+      "Sleep & Schedule":58,"Cleanliness":91,"Social & Guests":65,
+      "Kitchen":87,"Lifestyle":72,"Finances":81
+    },
+    mismatches:[
+      {t:"Irregular hours", d:"Kavya works late, often past midnight — WFH on unpredictable schedule."},
+      {t:"Social energy", d:"Strongly introverted at home — needs significant quiet alone time."},
+      {t:"Noise sensitivity", d:"Very sensitive to daytime noise, especially during recording sessions."},
+      {t:"Guest policy", d:"Prefers 24h+ notice for any visitors; spontaneous guests are stressful."}
+    ],
+    tags:["Night owl","Spotless kitchen","Solo cook","Indoor cat owner","Quiet vibes","Non-smoker"]
+  }
+];
+
+function scoreColor(s){
+  if(s>=85) return {c:'#1D9E75',bar:'#1D9E75'};
+  if(s>=70) return {c:'#BA7517',bar:'#BA7517'};
+  return {c:'#E24B4A',bar:'#E24B4A'};
+}
+
+function renderMatches(){
+  const list = document.getElementById('match-list');
+  const sorted = [...profiles].sort((a,b)=>b.score-a.score);
+  list.innerHTML = sorted.map(p=>{
+    const {c} = scoreColor(p.score);
+    const topCat = Object.entries(p.cats).sort((a,b)=>b[1]-a[1])[0];
+    const lowCat = Object.entries(p.cats).sort((a,b)=>a[1]-b[1])[0];
+    return `<div class="match-card" onclick="showDetail('${p.name}')">
+      <div class="mc-top">
+        <div class="mc-avatar" style="background:${p.bg};color:${p.fg}">${p.in}</div>
+        <div class="mc-info">
+          <div class="mc-name">${p.name}</div>
+          <div class="mc-meta">${p.age} yrs &middot; ${p.occ} &middot; ${p.city}</div>
+        </div>
+        <div class="mc-score">
+          <div class="mc-score-num" style="color:${c}">${p.score}%</div>
+          <div class="mc-score-lbl">match</div>
+        </div>
+      </div>
+      <div class="mc-bar-bg"><div class="mc-bar-fill" style="width:${p.score}%;background:${c}"></div></div>
+      <div class="mc-tags">
+        <span class="tag tag-good">✓ ${topCat[0]} ${topCat[1]}%</span>
+        <span class="tag tag-bad">✗ ${lowCat[0]} ${lowCat[1]}%</span>
+        <span class="tag tag-neutral">${p.mismatches.length} difference${p.mismatches.length>1?'s':''}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function showDetail(name){
+  const p = profiles.find(x=>x.name===name);
+  const {c} = scoreColor(p.score);
+  const html = `
+    <div class="detail-hero">
+      <div class="d-avatar" style="background:${p.bg};color:${p.fg}">${p.in}</div>
+      <div class="d-name">${p.name}</div>
+      <div class="d-meta">${p.age} years &middot; ${p.occ} &middot; ${p.city}</div>
+      <div class="d-score-big" style="color:${c}">${p.score}%</div>
+      <div class="d-score-lbl">compatibility score</div>
+      <div class="d-score-bar-bg"><div class="d-score-bar-fill" style="width:${p.score}%;background:${c}"></div></div>
+    </div>
+
+    <div class="section-card">
+      <div class="sc-head">Category breakdown</div>
+      ${Object.entries(p.cats).map(([k,v])=>{
+        const bc = v>=85?'#1D9E75':v>=70?'#BA7517':'#E24B4A';
+        return `<div class="cat-row">
+          <div class="cat-lbl">${k}</div>
+          <div class="cat-bar-bg"><div class="cat-bar-fill" style="width:${v}%;background:${bc}"></div></div>
+          <div class="cat-pct" style="color:${bc}">${v}%</div>
+        </div>`;
+      }).join('')}
+    </div>
+
+    <div class="section-card">
+      <div class="sc-head">Where you differ</div>
+      ${p.mismatches.map(m=>`
+        <div class="mismatch-row">
+          <div class="mm-icon">⚠</div>
+          <div class="mm-text"><strong>${m.t}:</strong> ${m.d}</div>
+        </div>`).join('')}
+    </div>
+
+    <div class="section-card">
+      <div class="sc-head">Lifestyle snapshot</div>
+      <div class="lifestyle-grid">${p.tags.map(t=>`<span class="ltag">${t}</span>`).join('')}</div>
+    </div>
+
+    <div class="connect-section">
+      <button class="btn-connect" onclick="sendConnect('${p.name}')">Send connection request 🤝</button>
+      <button class="btn-message" onclick="showToast('Message feature coming soon!')">Send a message</button>
+    </div>
+  `;
+  document.getElementById('detail-inner').innerHTML = html;
+  show('s-detail');
+}
+
+function sendConnect(name){
+  showToast('Connection request sent to '+name+'! 🎉');
+}
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 3000);
+}
+
+// filter chips (UI only)
+document.addEventListener('click', e=>{
+  if(e.target.classList.contains('filter-chip')){
+    document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
+    e.target.classList.add('active');
+  }
+});
+</script>
+</body>
+</html>
